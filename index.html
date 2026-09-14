@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML-Grundlagen Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .option-btn {
+      transition: all 0.2s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+
+  <!-- Header -->
+  <header class="bg-slate-800 border-b border-slate-700 p-4 text-center shadow-md">
+    <h1 class="text-2xl font-bold text-sky-400">HTML-Selbstlernkurs Quiz</h1>
+    <p class="text-sm text-slate-400">Teste dein Wissen zu den 10 Aufgaben</p>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-2xl mx-auto w-full p-4 flex-grow flex flex-col justify-center">
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-xl text-center">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Bist du bereit?</h2>
+      <p class="text-slate-300 mb-6">Das Quiz umfasst 10 Fragen zu HTML-Syntax, Bildformaten, Verlinkungen und Best Practices.</p>
+      <button id="start-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-sky-500/20 transition-all text-lg">
+        Quiz starten
+      </button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="hidden bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl">
+      <!-- Progress Bar & Status -->
+      <div class="mb-6">
+        <div class="flex justify-between text-sm text-slate-400 mb-2">
+          <span id="question-tracker">Frage 1 von 10</span>
+          <span id="score-tracker">Punkte: 0</span>
+        </div>
+        <div class="w-full bg-slate-700 h-2.5 rounded-full overflow-hidden">
+          <div id="progress-bar" class="bg-sky-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- Question -->
+      <h2 id="question-text" class="text-xl font-medium text-white mb-6">Fragetext lädt...</h2>
+
+      <!-- Options -->
+      <div id="options-container" class="space-y-3 mb-6">
+        <!-- Options generated dynamically -->
+      </div>
+
+      <!-- Rationale / Feedback Box -->
+      <div id="feedback-box" class="hidden p-4 rounded-lg mb-6 text-sm"></div>
+
+      <!-- Footer Buttons -->
+      <div class="flex justify-between items-center">
+        <button id="hint-btn" class="text-xs text-sky-400 hover:underline focus:outline-none">Tipp anzeigen</button>
+        <button id="next-btn" class="hidden bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-6 rounded-lg shadow transition-all">
+          Nächste Frage
+        </button>
+      </div>
+      <div id="hint-text" class="hidden text-xs text-amber-300 mt-2 italic"></div>
+    </div>
+
+    <!-- End Screen -->
+    <div id="end-screen" class="hidden bg-slate-800 rounded-xl p-8 border border-slate-700 shadow-xl text-center">
+      <h2 class="text-3xl font-bold mb-2 text-white">Quiz abgeschlossen!</h2>
+      <p id="final-score" class="text-xl text-sky-400 font-semibold mb-4">Du hast X von 10 Punkten erreicht.</p>
+      <p id="final-message" class="text-slate-300 mb-6">Feedback text...</p>
+      <button id="restart-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-sky-500/20 transition-all">
+        Erneut versuchen
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center p-4 text-xs text-slate-500 border-t border-slate-800">
+    HTML-Selbstlernkurs Interaktives Quiz
+  </footer>
+
+  <script>
+    const questionsData = [
+      {
+        question: "Ist HTML eine Programmiersprache?",
+        options: [
+          { text: "Ja, da sie Befehle zur Ausführung von Logik enthält.", isCorrect: false, rationale: "HTML enthält keine logischen Strukturen wie Schleifen oder Bedingungen. Es dient rein der Strukturierung von Inhalten." },
+          { text: "Nein, HTML ist eine Auszeichnungssprache (Markup Language).", isCorrect: true, rationale: "HTML beschreibt die Struktur und Bedeutung von Inhalten auf einer Webseite mittels Tags." },
+          { text: "Ja, weil man damit dynamische Skripte schreiben kann.", isCorrect: false, rationale: "Für Dynamik und Skripting ist JavaScript zuständig, nicht HTML." },
+          { text: "Nein, HTML ist eine Datenbank-Abfragesprache.", isCorrect: false, rationale: "Abfragesprachen wie SQL dienen der Datenverarbeitung, HTML hingegen stellt Inhalte im Browser dar." }
+        ],
+        hint: "Denke an die Abkürzung 'Markup Language' im Namen."
+      },
+      {
+        question: "Wie heißen die Befehle in der HTML-Syntax?",
+        options: [
+          { text: "Funktionen", isCorrect: false, rationale: "Funktionen sind Bestandteil von Programmiersprachen wie JavaScript." },
+          { text: "Tags", isCorrect: true, rationale: "HTML-Befehle werden in spitzen Klammern geschrieben und als Tags bezeichnet (z. B. <p>)." },
+          { text: "Klassen", isCorrect: false, rationale: "Klassen sind Attribute innerhalb von Tags, die meist für CSS-Styling genutzt werden." },
+          { text: "Methoden", isCorrect: false, rationale: "Methoden gehören zur objektorientierten Programmierung." }
+        ],
+        hint: "Sie stehen üblicherweise in spitzen Klammern wie <...>."
+      },
+      {
+        question: "Was benötigt man mindestens zum Erstellen und Anschauen von HTML-Dateien?",
+        options: [
+          { text: "Einen Webserver und ein Datenbankverwaltungssystem", isCorrect: false, rationale: "Reine HTML-Dateien benötigen keinen Server, um lokal im Browser angezeigt zu werden." },
+          { text: "Eine kostenpflichtige Entwicklungsumgebung", isCorrect: false, rationale: "Ein einfacher, kostenfreier Texteditor reicht völlig aus." },
+          { text: "Einen einfachen Texteditor und einen Webbrowser", isCorrect: true, rationale: "Ein Texteditor dient zum Schreiben des Quellcodes und ein Browser zur Darstellung." },
+          { text: "Einen speziellen HTML-Compiler", isCorrect: false, rationale: "HTML wird nicht kompiliert, sondern vom Browser direkt interpretiert." }
+        ],
+        hint: "Es reichen Standardwerkzeuge, die auf jedem Betriebssystem vorinstalliert sind."
+      },
+      {
+        question: "Welches Dateiformat eignet sich am besten für das Foto eines Mitarbeiters?",
+        options: [
+          { text: "GIF", isCorrect: false, rationale: "GIF ist auf 256 Farben beschränkt und eignet sich daher schlecht für fotorealistische Abbildungen." },
+          { text: "SVG", isCorrect: false, rationale: "SVG ist ein Vektorformat für Grafiken und Logos, nicht für komplexe Rasterfotos." },
+          { text: "JPEG", isCorrect: true, rationale: "JPEG bietet eine effiziente Kompression für Fotos mit vielen Details und Farbergängen." },
+          { text: "BMP", isCorrect: false, rationale: "BMP-Dateien sind unkomprimiert und für den Einsatz im Web viel zu groß." }
+        ],
+        hint: "Wähle das Standard-Dateiformat für Fotos mit vielen Farben."
+      },
+      {
+        question: "Welches Format ist ideal für eine einfache, animierte Erklärgrafik?",
+        options: [
+          { text: "JPEG", isCorrect: false, rationale: "JPEG unterstützt keinerlei Animationen." },
+          { text: "GIF", isCorrect: true, rationale: "GIF unterstützt einfache Bildsequenz-Animationen nativ in allen Browsern." },
+          { text: "PNG", isCorrect: false, rationale: "Standard-PNG-Dateien bieten keine Animationsunterstützung." },
+          { text: "PDF", isCorrect: false, rationale: "PDF ist ein Dokumentenformat und kein direkt eingebundenes Bildformat im Web." }
+        ],
+        hint: "Dieses Format wird häufig für kurze, wiederkehrende Bildanimationen genutzt."
+      },
+      {
+        question: "Welche Angabe zur 'Auflösung' ist bei der Ausgabe von Web-Rasterbildern entscheidend?",
+        options: [
+          { text: "Die feste PPI-Einstellung von exakt 300 ppi", isCorrect: false, rationale: "300 ppi ist ein Standard für den Druckbereich, nicht für Bildschirme." },
+          { text: "Die Pixelabmessungen (z. B. 800×600 px)", isCorrect: true, rationale: "Bildschirme stellen Bilder pixelbasiert dar; die PPI-Metadaten spielen für die Anzeigegröße im Web keine Rolle." },
+          { text: "Die Farbtiefe von mindestens 64 Bit", isCorrect: false, rationale: "Webbilder nutzen in der Regel 24 Bit (RGB) bzw. 32 Bit mit Alphakanal." },
+          { text: "Die DPI-Zahl im Druckmenü", isCorrect: false, rationale: "DPI bezieht sich auf Druckerpunkte, nicht auf die Bildschirmdarstellung." }
+        ],
+        hint: "Denke an die tatsächliche Anzahl der Bildpunkte in Breite und Höhe."
+      },
+      {
+        question: "Wie lautet die korrekte relative Verlinkung zur Datei 'seite_it.html' im Unterordner 'seiten'?",
+        options: [
+          { text: "href='seiten/seite_it.html'", isCorrect: true, rationale: "Gibt ausgehend vom aktuellen Verzeichnis den Pfad in den Unterordner 'seiten' an." },
+          { text: "href='/seite_it.html'", isCorrect: false, rationale: "Ein führender Slash verweist auf das Stammverzeichnis (Root) der Website, nicht auf einen Unterordner." },
+          { text: "href='../seite_it.html'", isCorrect: false, rationale: "'..' führt einen Ordner nach oben in der Hierarchie." },
+          { text: "href='http://seiten/seite_it.html'", isCorrect: false, rationale: "Das ist die Syntax für eine absolute URL, nicht für einen relativen Pfad." }
+        ],
+        hint: "Der Ordnername steht vor dem Dateinamen, getrennt durch einen Schrägstrich."
+      },
+      {
+        question: "Was sollte bei Dateinamen in Webprojekten VERMIEDEN werden?",
+        options: [
+          { text: "Die Verwendung von Bindestrichen zur Trennung", isCorrect: false, rationale: "Bindestriche sind eine empfohlene Praxis zur Trennung von Wörtern." },
+          { text: "Verwendung von Großbuchstaben, Leerzeichen und Umlauten", isCorrect: true, rationale: "Verursacht Fehler auf Unix/Linux-Servern sowie Probleme bei der URL-Kodierung." },
+          { text: "Aussagekräftige Namen wie 'kontakt.html'", isCorrect: false, rationale: "Sprechende Namen sind gut für Ordnung und Suchmaschinen." },
+          { text: "Ausschließlich Kleinschreibung", isCorrect: false, rationale: "Durchgängige Kleinschreibung ist eine wichtige Best Practice." }
+        ],
+        hint: "Sonderzeichen und unterschiedliche Groß-/Kleinschreibung führen oft zu Fehlern auf Servern."
+      },
+      {
+        question: "Warum ist das absolute Verlinken eigener interner Seiten unzweckmäßig?",
+        options: [
+          { text: "Weil absolute Links im Browser langsamer geladen werden.", isCorrect: false, rationale: "Die Ladezeit unterscheidet sich nicht spürbar." },
+          { text: "Weil der Code beim Serverwechsel oder lokalen Testen bricht.", isCorrect: true, rationale: "Absolute Links enthalten den Domainnamen; ändert sich dieser, funktionieren alle internen Links nicht mehr." },
+          { text: "Weil HTML keine absoluten Links unterstützt.", isCorrect: false, rationale: "HTML unterstützt absolute Links problemlos, z. B. für externe Webseiten." },
+          { text: "Weil Suchmaschinen absolute Links generell ignorieren.", isCorrect: false, rationale: "Suchmaschinen verarbeiten sowohl relative als auch absolute Links korrekt." }
+        ],
+        hint: "Überlege, was passiert, wenn du deine Website von 'test.de' auf 'beispiel.de' umziehst."
+      },
+      {
+        question: "Wann SOLLTEN absolute Links verwendet werden?",
+        options: [
+          { text: "Für alle Links im Hauptmenü", isCorrect: false, rationale: "Im Hauptmenü nutzt man relative Pfade für einfache Wartbarkeit." },
+          { text: "Beim Verlinken auf externe Webseiten Dritter", isCorrect: true, rationale: "Für fremde Webseiten muss die vollständige URL inkl. Protokoll (https://) angegeben werden." },
+          { text: "Für die Einbindung lokaler Stylesheets", isCorrect: false, rationale: "CSS-Dateien werden in der Regel relativ eingebunden." },
+          { text: "Niemals, absolute Links sind in HTML verboten", isCorrect: false, rationale: "Absolute Links sind für externe Verweise zwingend notwendig." }
+        ],
+        hint: "Wie verlinkst du auf eine externe Website wie google.com?"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedOptionIndex = null;
+
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const endScreen = document.getElementById('end-screen');
+
+    const startBtn = document.getElementById('start-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const hintBtn = document.getElementById('hint-btn');
+
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const feedbackBox = document.getElementById('feedback-box');
+    const hintText = document.getElementById('hint-text');
+
+    const questionTracker = document.getElementById('question-tracker');
+    const scoreTracker = document.getElementById('score-tracker');
+    const progressBar = document.getElementById('progress-bar');
+
+    startBtn.addEventListener('click', startQuiz);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', startQuiz);
+    hintBtn.addEventListener('click', toggleHint);
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      startScreen.classList.add('hidden');
+      endScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      showQuestion();
+    }
+
+    function showQuestion() {
+      resetState();
+      const currentQuestion = questionsData[currentQuestionIndex];
+
+      questionText.textContent = `${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+      questionTracker.textContent = `Frage ${currentQuestionIndex + 1} von ${questionsData.length}`;
+      scoreTracker.textContent = `Punkte: ${score}`;
+      
+      const progressPercent = ((currentQuestionIndex) / questionsData.length) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'option-btn w-full text-left p-4 rounded-lg bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-100 flex items-start gap-3';
+        
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'font-bold text-sky-400 min-w-[20px]';
+        letterSpan.textContent = String.fromCharCode(65 + index) + '.';
+        
+        const textSpan = document.createElement('span');
+        textSpan.textContent = option.text;
+
+        button.appendChild(letterSpan);
+        button.appendChild(textSpan);
+        
+        button.addEventListener('click', () => selectOption(index));
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    function resetState() {
+      selectedOptionIndex = null;
+      nextBtn.classList.add('hidden');
+      feedbackBox.classList.add('hidden');
+      feedbackBox.className = 'hidden p-4 rounded-lg mb-6 text-sm';
+      hintText.classList.add('hidden');
+      hintText.textContent = '';
+      optionsContainer.innerHTML = '';
+    }
+
+    function toggleHint() {
+      const hint = questionsData[currentQuestionIndex].hint;
+      hintText.textContent = `Hinweis: ${hint}`;
+      hintText.classList.toggle('hidden');
+    }
+
+    function selectOption(index) {
+      if (selectedOptionIndex !== null) return; // Prevent multiple clicks
+      
+      selectedOptionIndex = index;
+      const currentQuestion = questionsData[currentQuestionIndex];
+      const selectedOption = currentQuestion.options[index];
+      const optionButtons = optionsContainer.children;
+
+      if (selectedOption.isCorrect) {
+        score++;
+        scoreTracker.textContent = `Punkte: ${score}`;
+        optionButtons[index].classList.remove('bg-slate-700', 'hover:bg-slate-600');
+        optionButtons[index].classList.add('bg-emerald-950', 'border-emerald-500', 'text-emerald-200');
+        
+        feedbackBox.classList.remove('hidden');
+        feedbackBox.classList.add('bg-emerald-900/50', 'border', 'border-emerald-600', 'text-emerald-200');
+        feedbackBox.innerHTML = `<strong>Richtig!</strong> ${selectedOption.rationale}`;
+      } else {
+        optionButtons[index].classList.remove('bg-slate-700', 'hover:bg-slate-600');
+        optionButtons[index].classList.add('bg-rose-950', 'border-rose-500', 'text-rose-200');
+
+        // Highlight correct option
+        currentQuestion.options.forEach((opt, i) => {
+          if (opt.isCorrect) {
+            optionButtons[i].classList.remove('bg-slate-700');
+            optionButtons[i].classList.add('bg-emerald-950/60', 'border-emerald-600/60');
+          }
+        });
+
+        feedbackBox.classList.remove('hidden');
+        feedbackBox.classList.add('bg-rose-900/50', 'border', 'border-rose-600', 'text-rose-200');
+        feedbackBox.innerHTML = `<strong>Falsch.</strong> ${selectedOption.rationale}`;
+      }
+
+      // Disable all buttons
+      Array.from(optionButtons).forEach(btn => btn.classList.add('cursor-not-allowed', 'opacity-90'));
+      nextBtn.classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questionsData.length) {
+        showQuestion();
+      } else {
+        showEndScreen();
+      }
+    }
+
+    function showEndScreen() {
+      quizScreen.classList.add('hidden');
+      endScreen.classList.remove('hidden');
+
+      const finalScoreText = document.getElementById('final-score');
+      const finalMessageText = document.getElementById('final-message');
+
+      finalScoreText.textContent = `Du hast ${score} von ${questionsData.length} Punkten erreicht!`;
+
+      if (score === 10) {
+        finalMessageText.textContent = "Perfekt! Du hast alle Fragen richtig beantwortet und die HTML-Grundlagen meisterhaft verstanden.";
+      } else if (score >= 7) {
+        finalMessageText.textContent = "Gute Leistung! Du hast die meisten Konzepte gut verstanden.";
+      } else {
+        finalMessageText.textContent = "Schau dir die Aufgaben und Erklärungen noch einmal an, um dein Wissen zu festigen.";
+      }
+    }
+  </script>
+</body>
+</html>
+```eof
